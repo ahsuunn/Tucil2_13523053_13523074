@@ -2,6 +2,7 @@
 #include <cmath>
 #include <vector>
 #include "quadtree.h"
+#include "pixel.h"
 using namespace std;
 
 
@@ -99,6 +100,7 @@ double bloxMaxPixelDifference(vector<vector<Pixel>>& imageMatrix, int startX, in
     }
 
     double maxPixelDifference = ((maxPixel.r - minPixel.r) + (maxPixel.g - minPixel.g) + (maxPixel.b + minPixel.b))/3;
+    return maxPixelDifference;
 }
 
 
@@ -108,7 +110,7 @@ vector<vector<int>> computeHistogram(vector<vector<Pixel>>& imageMatrix, int sta
     vector<int> histogramR(pow(2,colorBit), 0); 
     vector<int> histogramG(pow(2,colorBit), 0); 
     vector<int> histogramB(pow(2,colorBit), 0); 
-    vector<vector<int>> histogram;
+    vector<vector<int>> histogram(3);
 
     int rowSize = imageMatrix.size();
     int colSize = imageMatrix[0].size();
@@ -153,6 +155,6 @@ double blockEntropy(vector<vector<Pixel>>& imageMatrix, int startX, int startY, 
     entropyB = computeChannelEntropy(histogramB, colorBit);
     
 
-    double entropy = entropyR + entropyG + entropyB / 3;
+    double entropy = (entropyR + entropyG + entropyB) / 3;
     return entropy;
 }
