@@ -4,8 +4,8 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
-#include "quadtree.h"
-#include "pixel.h"
+#include "Quadtree.h"
+#include "Pixel.h"
 using namespace std;
 
 // Variance
