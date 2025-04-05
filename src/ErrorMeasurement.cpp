@@ -1,34 +1,27 @@
-#include <iostream>
-#include <cmath>
-#include <vector>
-#include "quadtree.h"
-#include "pixel.h"
-using namespace std;
-
-
+#include "ErrorMeasurement.h"
 
 // Variance
 vector<double> averageBlockValue(vector<vector<Pixel>>& imageMatrix, int startX, int startY, int width, int height){
     int rowSize = imageMatrix.size();
     int colSize = imageMatrix[0].size();
-
+    
     double sumR = 0;
     double sumG = 0;
     double sumB = 0;
     int count = 0;
-
+    
     for (int i = startX; i < startX + width && i < rowSize; ++i) {
         for (int j = startY; j < startY + height && j < colSize; ++j) {
             sumR += imageMatrix[i][j].r ; sumG += imageMatrix[i][j].g; sumB += imageMatrix[i][j].b;
             count++;
         }
     }
-
+    
     double averageR = sumR / count;
     double averageG = sumG / count;
     double averageB = sumB / count;
     vector<double> resulPixel = {averageR, averageG, averageB};
-
+    
     return resulPixel; 
 } 
 
@@ -37,12 +30,12 @@ double blockVariance(vector<vector<Pixel>>& imageMatrix, int startX, int startY,
     int N = width * height;
     int rowSize = imageMatrix.size();
     int colSize = imageMatrix[0].size();
-
+    
     vector<double> averagePixelValue = averageBlockValue(imageMatrix, startX, startY, width, height);
     double averageR = averagePixelValue[0];
     double averageG = averagePixelValue[1];
     double averageB = averagePixelValue[2];
-
+    
     for (int i = startX; i < startX + width && i < rowSize; ++i) {
         for (int j = startY; j < startY + height && j < colSize; ++j) {
             sumR += pow((imageMatrix[i][j].r - averageR), 2);
@@ -50,7 +43,7 @@ double blockVariance(vector<vector<Pixel>>& imageMatrix, int startX, int startY,
             sumB += pow((imageMatrix[i][j].b - averageB), 2);
         }
     }
-
+    
     double variance = (sumR + sumG + sumB) / (3 * N);
     return variance;
 }
@@ -61,12 +54,12 @@ double blockMeanAbsoluteDeviation(vector<vector<Pixel>>& imageMatrix, int startX
     int N = width * height;
     int rowSize = imageMatrix.size();
     int colSize = imageMatrix[0].size();
-
+    
     vector<double> averagePixelValue = averageBlockValue(imageMatrix, startX, startY, width, height);
     double averageR = averagePixelValue[0];
     double averageG = averagePixelValue[1];
     double averageB = averagePixelValue[2];
-
+    
     for (int i = startX; i < startX + width && i < rowSize; ++i) {
         for (int j = startY; j < startY + height && j < colSize; ++j) {
             sumR += abs(imageMatrix[i][j].r - averageR);
@@ -74,7 +67,7 @@ double blockMeanAbsoluteDeviation(vector<vector<Pixel>>& imageMatrix, int startX
             sumB += abs(imageMatrix[i][j].b - averageB);
         }
     }
-
+    
     double MAD = (sumR + sumG + sumB) / (3 * N);
     return MAD;
 }
@@ -86,19 +79,19 @@ double bloxMaxPixelDifference(vector<vector<Pixel>>& imageMatrix, int startX, in
     int colSize = imageMatrix[0].size();
     Pixel maxPixel = {0,0,0};
     Pixel minPixel = {0,0,0};
-
+    
     for (int i = startX; i < startX + width && i < rowSize; ++i) {
         for (int j = startY; j < startY + height && j < colSize; ++j) {
             maxPixel.r = max(maxPixel.r, imageMatrix[i][j].r);
             maxPixel.g = max(maxPixel.g, imageMatrix[i][j].g);
             maxPixel.b = max(maxPixel.b, imageMatrix[i][j].b);
-        
+            
             minPixel.r = min(minPixel.r, imageMatrix[i][j].r);
             minPixel.g = min(minPixel.g, imageMatrix[i][j].g);
             minPixel.b = min(minPixel.b, imageMatrix[i][j].b);
         }
     }
-
+    
     double maxPixelDifference = ((maxPixel.r - minPixel.r) + (maxPixel.g - minPixel.g) + (maxPixel.b + minPixel.b))/3;
     return maxPixelDifference;
 }
@@ -111,7 +104,7 @@ vector<vector<int>> computeHistogram(vector<vector<Pixel>>& imageMatrix, int sta
     vector<int> histogramG(pow(2,colorBit), 0); 
     vector<int> histogramB(pow(2,colorBit), 0); 
     vector<vector<int>> histogram(3);
-
+    
     int rowSize = imageMatrix.size();
     int colSize = imageMatrix[0].size();
     // Iterate through the block
@@ -144,17 +137,17 @@ double blockEntropy(vector<vector<Pixel>>& imageMatrix, int startX, int startY, 
     double entropyR = 0, entropyG = 0, entropyB = 0;
     int N = width * height;
     int totalColorBit = pow(2, colorBit);
-
+    
     vector<vector<int>> histogram = computeHistogram(imageMatrix, startX, startY, width, height, colorBit);
     vector<int> histogramR = histogram[0];
     vector<int> histogramG = histogram[1];
     vector<int> histogramB = histogram[2];
-
+    
     entropyR = computeChannelEntropy(histogramR, colorBit);
     entropyG = computeChannelEntropy(histogramG, colorBit);
     entropyB = computeChannelEntropy(histogramB, colorBit);
     
-
+    
     double entropy = (entropyR + entropyG + entropyB) / 3;
     return entropy;
 }

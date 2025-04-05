@@ -1,4 +1,4 @@
-#include "ImageProcess.h"
+#include "header/ImageProcess.h"
 
 std::vector<std::vector<Pixel> > ImageProcessor::loadImage(const std::string& filename, int& width, int& height){
     int channels;

@@ -5,7 +5,7 @@
 #include <string>
 #include "stbi/stb_image.h"
 #include "stbi/stb_image_write.h"
-#include "pixel.h"
+#include "Pixel.h"
 
 class ImageProcessor {
     public:
