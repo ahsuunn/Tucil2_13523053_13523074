@@ -3,8 +3,8 @@
 
 #include <vector>
 #include <string>
-#include "stbi/stb_image.h"
-#include "stbi/stb_image_write.h"
+#include "../stbi/stb_image.h"
+#include "../stbi/stb_image_write.h"
 #include "Pixel.h"
 
 class ImageProcessor {
