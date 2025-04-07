@@ -9,12 +9,13 @@ using namespace std;
 
 class QuadTreeNode{
     private:
+   
+   
+    public:
     bool isLeaf;
     Pixel color; // Average value of a leaf
     int startX, startY, width, height;
     QuadTreeNode* children[4];
-   
-    public:
     QuadTreeNode();
     QuadTreeNode(Pixel color);
     QuadTreeNode(int startX, int startY, int width, int height, bool isLeaf);

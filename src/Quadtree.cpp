@@ -1,4 +1,4 @@
-#include "Quadtree.h"
+#include "header/Quadtree.h"
 
 
 // Constructor
@@ -58,11 +58,14 @@ void QuadTreeNode::splitQuadTree(vector<vector<Pixel>>& imageMatrix, double thre
     this->isLeaf = false;
     int newHeight = this->height/2;
     int newWidth = this->width/2;
+
+    int widthRight = width - newWidth;
+    int heightBottom = height - newHeight;
     
-    this->children[0] = new QuadTreeNode(startX, startY + newHeight, newWidth, newHeight, true); //Top Left
-    this->children[1] = new QuadTreeNode(startX + newWidth, startY + newHeight, newWidth, newHeight, true); //Top Right
-    this->children[2] = new QuadTreeNode(startX, startY, newWidth, newHeight, true); //Bottom Left
-    this->children[3] = new QuadTreeNode(startX + newWidth, startY, newWidth, newHeight, true); //Bottom Right
+    this->children[0] = new QuadTreeNode(startX, startY, newWidth, newHeight, true); // Top Left
+    this->children[1] = new QuadTreeNode(startX + newWidth, startY, widthRight, newHeight, true); // Top Right
+    this->children[2] = new QuadTreeNode(startX, startY + newHeight, newWidth, heightBottom, true); // Bottom Left
+    this->children[3] = new QuadTreeNode(startX + newWidth, startY + newHeight, widthRight, heightBottom, true); // Bottom Right
     
     for(int i = 0; i < 4; i++){
         this->children[i]->splitQuadTree(imageMatrix,threshold,minBlockArea);
