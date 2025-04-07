@@ -1,6 +1,6 @@
 #include "header/Quadtree.h"
 #include "header/ErrorMeasurement.h"
-#include "header/ImageProcess.h"
+#include "header/ImageProcessor.h"
 #include <iostream>
 #include <chrono>
 #include <filesystem>
@@ -12,9 +12,9 @@ using namespace std;
 void fillBlock(vector<vector<Pixel>>& result, int startX, int startY, int width, int height, const Pixel& color) {
     for (int y = startY; y < startY + height; ++y) {
         for (int x = startX; x < startX + width; ++x) {
-            if (y < result.size() && x < result[0].size()) {
-                result[y][x] = color;
-            }
+            if (x < result.size() && y < result[0].size()) {
+                result[x][y] = color;
+            } 
         }
     }
 }
@@ -48,6 +48,25 @@ void calculateCompression(const std::string& inputPath, const std::string& outpu
     } else {
         std::cerr << "Error: File tidak ditemukan.\n";
     }
+}
+
+
+int countNodes(QuadTreeNode* node) {
+    if (node == nullptr) return 0;
+    int count = 1;
+    for (int i = 0; i < 4; ++i) {
+        count += countNodes(node->children[i]);
+    }
+    return count;
+}
+
+int treeDepth(QuadTreeNode* node) {
+    if (node == nullptr || node->isLeaf) return 1;
+    int maxDepth = 0;
+    for (int i = 0; i < 4; ++i) {
+        maxDepth = std::max(maxDepth, treeDepth(node->children[i]));
+    }
+    return 1 + maxDepth;
 }
 
 int main() {
@@ -108,11 +127,11 @@ int main() {
     }
 
     // Buat hasil kompresi
-    vector<vector<Pixel>> compressedImage(height, vector<Pixel>(width));
+    vector<vector<Pixel>> compressedImage(width, vector<Pixel>(height));
     renderQuadTreeToMatrix(root, compressedImage);
 
     // Simpan ke file
-    ImageProcessor::saveImage(outputPath, compressedImage);
+    ImageProcessor::saveImage(outputPath, compressedImage, width, height);
 
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double> duration = end - start;
@@ -120,6 +139,9 @@ int main() {
 
     calculateCompression(inputPath, outputPath);
 
+    std::cout << "Banyak simpul: " << countNodes(root) << std::endl;
+    std::cout << "Kedalaman pohon: " << treeDepth(root) << std::endl;  
+    
     delete root;
     return 0;
 }
