@@ -20,7 +20,7 @@ class QuadTreeNode{
     QuadTreeNode(int startX, int startY, int width, int height, bool isLeaf);
     ~QuadTreeNode(); 
 
-    void splitQuadTree(vector<vector<Pixel>>& imageMatrix, double threshold, int minBlockWidth, int minBlockHeight);
+    void splitQuadTree(vector<vector<Pixel>>& imageMatrix, double threshold, int minBlockArea);
 };
 
 #endif QUADTREE

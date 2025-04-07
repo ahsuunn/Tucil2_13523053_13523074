@@ -29,7 +29,7 @@ QuadTreeNode::~QuadTreeNode(){
 }
 
 //Method
-void QuadTreeNode::splitQuadTree(vector<vector<Pixel>>& imageMatrix, double threshold, int minBlockWidth, int minBlockHeight){
+void QuadTreeNode::splitQuadTree(vector<vector<Pixel>>& imageMatrix, double threshold, int minBlockArea){
     if(!this->isLeaf){
         cout << "Tree that is already not a leaft can't be split again\n";
         return;
@@ -42,7 +42,7 @@ void QuadTreeNode::splitQuadTree(vector<vector<Pixel>>& imageMatrix, double thre
         static_cast<int>(avgColor[2])
     };
 
-    if(this->height < minBlockHeight || this->width < minBlockWidth){
+    if(this->height * this->width < minBlockArea){
         return;
     }
 
@@ -65,6 +65,6 @@ void QuadTreeNode::splitQuadTree(vector<vector<Pixel>>& imageMatrix, double thre
     this->children[3] = new QuadTreeNode(startX + newWidth, startY, newWidth, newHeight, true); //Bottom Right
     
     for(int i = 0; i < 4; i++){
-        this->children[i]->splitQuadTree(imageMatrix,threshold,minBlockWidth,minBlockHeight);
+        this->children[i]->splitQuadTree(imageMatrix,threshold,minBlockArea);
     }
 }
