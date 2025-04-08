@@ -58,12 +58,12 @@ std::vector<std::vector<Pixel>> ImageProcessor::loadImage(const std::string& fil
     return imageMatrix;
 }
 
-void ImageProcessor::saveImage(const std::string& filename, const std::vector<std::vector<Pixel>>& imageMatrix, int width, int height) {
+bool ImageProcessor::saveImage(const std::string& filename, const std::vector<std::vector<Pixel>>& imageMatrix, int width, int height) {
     FreeImage_Initialise();
     FIBITMAP* bitmap = FreeImage_Allocate(width, height, 24);
     if (!bitmap) {
         std::cerr << "Failed to allocate bitmap for saving." << std::endl;
-        exit(1);
+        return false;
     }
 
     for (int y = 0; y < height; ++y) {
@@ -77,10 +77,12 @@ void ImageProcessor::saveImage(const std::string& filename, const std::vector<st
     }
 
     FREE_IMAGE_FORMAT format = FreeImage_GetFIFFromFilename(filename.c_str());
-    if (!FreeImage_Save(format, bitmap, filename.c_str())) {
+    bool success = FreeImage_Save(format, bitmap, filename.c_str());
+    if (!success) {
         std::cerr << "Failed to save image: " << filename << std::endl;
     }
 
     FreeImage_Unload(bitmap);
     FreeImage_DeInitialise();
+    return success;
 }
