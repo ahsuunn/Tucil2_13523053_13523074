@@ -6,4 +6,4 @@ struct Pixel {
     Pixel(int r = 0, int g = 0, int b = 0) : r(r), g(g), b(b) {}
 };
 
-#endif PIXEL
+#endif

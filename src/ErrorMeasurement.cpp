@@ -96,58 +96,56 @@ double bloxMaxPixelDifference(vector<vector<Pixel>>& imageMatrix, int startX, in
     return maxPixelDifference;
 }
 
-
-
-// Entropy
-vector<vector<int>> computeHistogram(vector<vector<Pixel>>& imageMatrix, int startX, int startY, int width, int height, int colorBit) {
-    vector<int> histogramR(pow(2,colorBit), 0); 
-    vector<int> histogramG(pow(2,colorBit), 0); 
-    vector<int> histogramB(pow(2,colorBit), 0); 
-    vector<vector<int>> histogram(3);
-    
-    int rowSize = imageMatrix.size();
-    int colSize = imageMatrix[0].size();
-    // Iterate through the block
-    for (int i = startX; i < startX + width && i < rowSize; ++i) {
-        for (int j = startY; j < startY + height && j < colSize; ++j) {
-            histogramR[imageMatrix[i][j].r]++;
-            histogramG[imageMatrix[i][j].g]++;
-            histogramB[imageMatrix[i][j].b]++;
+    // Entropy
+    vector<vector<int>> computeHistogram(vector<vector<Pixel>>& imageMatrix, int startX, int startY, int width, int height, int colorBit) {
+        vector<int> histogramR(pow(2,colorBit), 0); 
+        vector<int> histogramG(pow(2,colorBit), 0); 
+        vector<int> histogramB(pow(2,colorBit), 0); 
+        vector<vector<int>> histogram(3);
+        
+        int rowSize = imageMatrix.size();
+        int colSize = imageMatrix[0].size();
+        // Iterate through the block
+        for (int i = startX; i < startX + width && i < rowSize; ++i) {
+            for (int j = startY; j < startY + height && j < colSize; ++j) {
+                histogramR[imageMatrix[i][j].r]++;
+                histogramG[imageMatrix[i][j].g]++;
+                histogramB[imageMatrix[i][j].b]++;
+            }
         }
-    }
-    histogram[0] = histogramR;
-    histogram[1] = histogramG;
-    histogram[2] = histogramB;
-    return histogram;
-}
+        histogram[0] = histogramR;
+        histogram[1] = histogramG;
+        histogram[2] = histogramB;
+        
 
-double computeChannelEntropy(vector<int>& histogram, int colorBit){
-    double entropy = 0;
-    int totalColorBit = pow(2,colorBit);
-    for (int i = 0; i < histogram.size(); ++i) {
-        if(histogram[i] > 0){
-            double probability = histogram[i] / totalColorBit; 
-            entropy -= probability * log2(probability);
+        return histogram;
+    }
+
+    double computeChannelEntropy(vector<int>& histogram, int totalPixels){
+        double entropy = 0;
+        for (int i = 0; i < histogram.size(); ++i) {
+            if(histogram[i] > 0){
+                double probability = static_cast<double>(histogram[i]) / totalPixels; 
+                entropy -= probability * log2(probability);
+            }
         }
+        return entropy;
     }
-    return entropy;
-}
 
-double blockEntropy(vector<vector<Pixel>>& imageMatrix, int startX, int startY, int width, int height, int colorBit){
-    double entropyR = 0, entropyG = 0, entropyB = 0;
-    int N = width * height;
-    int totalColorBit = pow(2, colorBit);
-    
-    vector<vector<int>> histogram = computeHistogram(imageMatrix, startX, startY, width, height, colorBit);
-    vector<int> histogramR = histogram[0];
-    vector<int> histogramG = histogram[1];
-    vector<int> histogramB = histogram[2];
-    
-    entropyR = computeChannelEntropy(histogramR, colorBit);
-    entropyG = computeChannelEntropy(histogramG, colorBit);
-    entropyB = computeChannelEntropy(histogramB, colorBit);
-    
-    
-    double entropy = (entropyR + entropyG + entropyB) / 3;
-    return entropy;
-}
+    double blockEntropy(vector<vector<Pixel>>& imageMatrix, int startX, int startY, int width, int height, int colorBit){
+        double entropyR = 0, entropyG = 0, entropyB = 0;
+        int totalPixel = width * height;
+
+        vector<vector<int>> histogram = computeHistogram(imageMatrix, startX, startY, width, height, colorBit);
+        vector<int> histogramR = histogram[0];
+        vector<int> histogramG = histogram[1];
+        vector<int> histogramB = histogram[2];
+        
+        entropyR = computeChannelEntropy(histogramR, totalPixel);
+        entropyG = computeChannelEntropy(histogramG, totalPixel);
+        entropyB = computeChannelEntropy(histogramB, totalPixel);
+        
+        
+        double entropy = (entropyR + entropyG + entropyB) / 3;
+        return entropy;
+    }

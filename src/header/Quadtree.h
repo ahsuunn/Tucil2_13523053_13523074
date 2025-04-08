@@ -21,7 +21,10 @@ class QuadTreeNode{
     QuadTreeNode(int startX, int startY, int width, int height, bool isLeaf);
     ~QuadTreeNode(); 
 
-    void splitQuadTree(vector<vector<Pixel>>& imageMatrix, double threshold, int minBlockArea);
+    void splitQuadTreeWithVariance(vector<vector<Pixel>>& imageMatrix, double threshold, int minBlockArea);
+    void splitQuadTreeWithMAD(vector<vector<Pixel>>& imageMatrix, double threshold, int minBlockArea);
+    void splitQuadTreeWithMaxDiff(vector<vector<Pixel>>& imageMatrix, double threshold, int minBlockArea);
+    void splitQuadTreeWithEntropy(vector<vector<Pixel>>& imageMatrix, double threshold, int minBlockArea);
 };
 
-#endif QUADTREE
+#endif

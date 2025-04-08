@@ -23,4 +23,4 @@ vector<vector<int>> computeHistogram(vector<vector<Pixel>>& imageMatrix, int sta
 double computeChannelEntropy(vector<int>& histogram, int colorBit);
 double blockEntropy(vector<vector<Pixel>>& imageMatrix, int startX, int startY, int width, int height, int colorBit);
 
-#endif ERROR_MEASUREMENT
+#endif

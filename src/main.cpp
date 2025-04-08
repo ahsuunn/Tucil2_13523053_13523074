@@ -110,17 +110,17 @@ int main() {
 
     switch (metodeError) {
         case 1:
-            root->splitQuadTree(image, threshold, minBlockSize); // Variance
+            root->splitQuadTreeWithVariance(image, threshold, minBlockSize); // Variance
             break;
-        // case 2:
-        //     root->splitQuadTreeWithMAD(image, threshold, minBlockSize, minBlockSize);
-        //     break;
-        // case 3:
-        //     root->splitQuadTreeWithMaxDiff(image, threshold, minBlockSize, minBlockSize);
-        //     break;
-        // case 4:
-        //     root->splitQuadTreeWithEntropy(image, threshold, minBlockSize, minBlockSize);
-        //     break;
+        case 2:
+            root->splitQuadTreeWithMAD(image, threshold, minBlockSize);
+            break;
+        case 3:
+            root->splitQuadTreeWithMaxDiff(image, threshold, minBlockSize);
+            break;
+        case 4:
+            root->splitQuadTreeWithEntropy(image, threshold, minBlockSize);
+            break;
         default:
             cout << "Metode error tidak valid.\n";
             return 1;
