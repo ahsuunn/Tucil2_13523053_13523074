@@ -10,34 +10,7 @@
 #include <FreeImage.h>
 
 namespace fs = std::filesystem;
-
 using namespace std;
-
-int frameCount = 0;
-
-// Fungsi bantu: mengisi blok dengan warna solid
-// void fillBlock(vector<vector<Pixel>>& result, int startX, int startY, int width, int height, const Pixel& color) {
-//     for (int y = startY; y < startY + height; ++y) {
-//         for (int x = startX; x < startX + width; ++x) {
-//             if (x < result.size() && y < result[0].size()) {
-//                 result[x][y] = color;
-//             } 
-//         }
-//     }
-// }
-
-// // Render dari QuadTree ke matrix hasil
-// void renderQuadTreeToMatrix(QuadTreeNode* node, vector<vector<Pixel>>& result) {
-//     if (node->isLeaf) {
-//         fillBlock(result, node->startX, node->startY, node->width, node->height, node->color);
-//     } else {
-//         for (int i = 0; i < 4; i++) {
-//             if (node->children[i]) {
-//                 renderQuadTreeToMatrix(node->children[i], result);
-//             }
-//         }
-//     }
-// }
 
 // Menghitung dan mencetak persentase kompresi
 void calculateCompression(const std::string& inputPath, const std::string& outputPath) {
@@ -63,7 +36,6 @@ int main() {
     int metodeError;
     double threshold;
     int minBlockSize;
-    InitializeMagick(nullptr);
     
     cout << "==== Program Kompresi Gambar dengan QuadTree ====\n";
     

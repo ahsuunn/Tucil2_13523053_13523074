@@ -71,7 +71,6 @@ void QuadTreeNode::splitQuadTreeWithVariance(vector<vector<Pixel>>& imageMatrix,
         this->children[i]->splitQuadTreeWithVariance(imageMatrix,threshold,minBlockArea);
     }
 }
-
 void QuadTreeNode::splitQuadTreeWithMAD(vector<vector<Pixel>>& imageMatrix, double threshold, int minBlockArea){
     if(!this->isLeaf){
         cout << "Tree that is already not a leaft can't be split again\n";
@@ -156,7 +155,6 @@ void QuadTreeNode::splitQuadTreeWithMaxDiff(vector<vector<Pixel>>& imageMatrix, 
         this->children[i]->splitQuadTreeWithMaxDiff(imageMatrix,threshold,minBlockArea);
     }
 }
-
 void QuadTreeNode::splitQuadTreeWithEntropy(vector<vector<Pixel>>& imageMatrix, double threshold, int minBlockArea){
     if(!this->isLeaf){
         cout << "Tree that is already not a leaft can't be split again\n";

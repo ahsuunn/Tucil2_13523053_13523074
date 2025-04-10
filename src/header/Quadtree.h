@@ -1,7 +1,6 @@
 #ifndef QUADTREE
 #define QUADTREE
 
-#include <Magick++.h>
 #include <iomanip> 
 #include <iostream>
 #include <vector>
@@ -10,7 +9,6 @@
 #include <FreeImage.h>
 #include "ImageProcessor.h"
 using namespace std;
-using namespace Magick;
 
 class QuadTreeNode{
     public:
