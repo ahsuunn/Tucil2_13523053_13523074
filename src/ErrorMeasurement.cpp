@@ -78,7 +78,7 @@ double bloxMaxPixelDifference(vector<vector<Pixel>>& imageMatrix, int startX, in
     int rowSize = imageMatrix.size();
     int colSize = imageMatrix[0].size();
     Pixel maxPixel = {0,0,0};
-    Pixel minPixel = {0,0,0};
+    Pixel minPixel = {255,255,255};
     
     for (int i = startX; i < startX + width && i < rowSize; ++i) {
         for (int j = startY; j < startY + height && j < colSize; ++j) {
@@ -92,7 +92,7 @@ double bloxMaxPixelDifference(vector<vector<Pixel>>& imageMatrix, int startX, in
         }
     }
     
-    double maxPixelDifference = ((maxPixel.r - minPixel.r) + (maxPixel.g - minPixel.g) + (maxPixel.b + minPixel.b))/3;
+    double maxPixelDifference = ((maxPixel.r - minPixel.r) + (maxPixel.g - minPixel.g) + (maxPixel.b - minPixel.b))/3;
     return maxPixelDifference;
 }
 
