@@ -8,6 +8,7 @@
 #include "Pixel.h"
 #include <FreeImage.h>
 #include "ImageProcessor.h"
+#include <sstream>
 using namespace std;
 
 class QuadTreeNode{
