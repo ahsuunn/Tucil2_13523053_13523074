@@ -13,29 +13,31 @@ namespace fs = std::filesystem;
 
 using namespace std;
 
-// Fungsi bantu: mengisi blok dengan warna solid
-void fillBlock(vector<vector<Pixel>>& result, int startX, int startY, int width, int height, const Pixel& color) {
-    for (int y = startY; y < startY + height; ++y) {
-        for (int x = startX; x < startX + width; ++x) {
-            if (x < result.size() && y < result[0].size()) {
-                result[x][y] = color;
-            } 
-        }
-    }
-}
+int frameCount = 0;
 
-// Render dari QuadTree ke matrix hasil
-void renderQuadTreeToMatrix(QuadTreeNode* node, vector<vector<Pixel>>& result) {
-    if (node->isLeaf) {
-        fillBlock(result, node->startX, node->startY, node->width, node->height, node->color);
-    } else {
-        for (int i = 0; i < 4; i++) {
-            if (node->children[i]) {
-                renderQuadTreeToMatrix(node->children[i], result);
-            }
-        }
-    }
-}
+// Fungsi bantu: mengisi blok dengan warna solid
+// void fillBlock(vector<vector<Pixel>>& result, int startX, int startY, int width, int height, const Pixel& color) {
+//     for (int y = startY; y < startY + height; ++y) {
+//         for (int x = startX; x < startX + width; ++x) {
+//             if (x < result.size() && y < result[0].size()) {
+//                 result[x][y] = color;
+//             } 
+//         }
+//     }
+// }
+
+// // Render dari QuadTree ke matrix hasil
+// void renderQuadTreeToMatrix(QuadTreeNode* node, vector<vector<Pixel>>& result) {
+//     if (node->isLeaf) {
+//         fillBlock(result, node->startX, node->startY, node->width, node->height, node->color);
+//     } else {
+//         for (int i = 0; i < 4; i++) {
+//             if (node->children[i]) {
+//                 renderQuadTreeToMatrix(node->children[i], result);
+//             }
+//         }
+//     }
+// }
 
 // Menghitung dan mencetak persentase kompresi
 void calculateCompression(const std::string& inputPath, const std::string& outputPath) {
@@ -56,30 +58,12 @@ void calculateCompression(const std::string& inputPath, const std::string& outpu
 }
 
 
-int countNodes(QuadTreeNode* node) {
-    if (node == nullptr) return 0;
-    int count = 1;
-    for (int i = 0; i < 4; ++i) {
-        count += countNodes(node->children[i]);
-    }
-    return count;
-}
-
-int treeDepth(QuadTreeNode* node) {
-    if (node == nullptr || node->isLeaf) return 1;
-    int maxDepth = 0;
-    for (int i = 0; i < 4; ++i) {
-        maxDepth = std::max(maxDepth, treeDepth(node->children[i]));
-    }
-    return 1 + maxDepth;
-}
-
-
 int main() {
     string inputPath, outputPath;
     int metodeError;
     double threshold;
     int minBlockSize;
+    InitializeMagick(nullptr);
     
     cout << "==== Program Kompresi Gambar dengan QuadTree ====\n";
     
@@ -145,29 +129,6 @@ int main() {
             cout << "Error: Threshold harus bernilai positif. Silakan coba lagi.\n";
             continue;
         }
-        
-        if (metodeError == 1 && threshold > 10000) {
-            cout << "Peringatan: Nilai threshold untuk Variance biasanya di bawah 10000. Lanjutkan? (y/n): ";
-            char confirm;
-            cin >> confirm;
-            if (tolower(confirm) != 'y') continue;
-        } else if (metodeError == 2 && threshold > 100) {
-            cout << "Peringatan: Nilai threshold untuk MAD biasanya di bawah 100. Lanjutkan? (y/n): ";
-            char confirm;
-            cin >> confirm;
-            if (tolower(confirm) != 'y') continue;
-        } else if (metodeError == 3 && threshold > 255) {
-            cout << "Peringatan: Nilai threshold untuk Max Diff biasanya di bawah 255. Lanjutkan? (y/n): ";
-            char confirm;
-            cin >> confirm;
-            if (tolower(confirm) != 'y') continue;
-        } else if (metodeError == 4 && threshold > 8) {
-            cout << "Peringatan: Nilai threshold untuk Entropy biasanya di bawah 8. Lanjutkan? (y/n): ";
-            char confirm;
-            cin >> confirm;
-            if (tolower(confirm) != 'y') continue;
-        }
-        
         break;
     }
     
@@ -192,7 +153,8 @@ int main() {
     
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     
-    //Validasi output path
+
+    //Validasi image output path
     while (true) {
         cout << "\nMasukkan path absolut untuk menyimpan gambar hasil kompresi: ";
         getline(cin, outputPath);
@@ -211,7 +173,7 @@ int main() {
         transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
         
         if (extension != "jpg" && extension != "jpeg" && extension != "png" ) {
-            cout << "Error: Format file keluaran harus berupa JPG atau PNG. Silakan coba lagi.\n";
+            cout << "Error: Format file keluaran harus berupa JPG/JPEG/PNG. Silakan coba lagi.\n";
             continue;
         }
         
@@ -225,6 +187,56 @@ int main() {
         
         break;
     }
+    
+    //Validasi gif output path
+    string isSaveGIF;
+    while (true) {
+        cout << "Apakah Anda ingin menyimpan hasil kompresi sebagai GIF? (y/n): ";
+        getline(cin, isSaveGIF);
+    
+        if (isSaveGIF == "y" || isSaveGIF == "Y" || isSaveGIF == "n" || isSaveGIF == "N") {
+            break;
+        } else {
+            cout << "Input tidak valid. Harap masukkan hanya 'y' atau 'n'.\n";
+        }
+    }
+
+    string gifPath;
+    if (isSaveGIF == "y" || isSaveGIF == "Y") {
+        while (true) {
+            cout << "\nMasukkan path absolut untuk menyimpan GIF hasil kompresi: ";
+            getline(cin, gifPath);
+    
+            size_t lastSlash = gifPath.find_last_of("/\\");
+            if (lastSlash != string::npos) {
+                string directory = gifPath.substr(0, lastSlash);
+                struct stat info;
+                if (stat(directory.c_str(), &info) != 0 || !(info.st_mode & S_IFDIR)) {
+                    cout << "Error: Direktori tujuan tidak ditemukan. Silakan coba lagi.\n";
+                    continue;
+                }
+            }
+    
+            string extension = gifPath.substr(gifPath.find_last_of('.') + 1);
+            transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+    
+            if (extension != "gif") {
+                cout << "Error: Format file harus berupa .gif. Silakan coba lagi.\n";
+                continue;
+            }
+    
+            ofstream testFile(gifPath);
+            if (!testFile) {
+                cout << "Error: Tidak dapat menulis ke file tujuan. Periksa izin akses atau gunakan path lain.\n";
+                continue;
+            }
+            testFile.close();
+            remove(gifPath.c_str()); 
+    
+            break;
+        }
+    }
+
     
     cout << "\n=== Input selesai. Memulai proses kompresi... ===\n";
     auto start = chrono::high_resolution_clock::now();
@@ -268,7 +280,7 @@ int main() {
         
         // Create compression result
         vector<vector<Pixel>> compressedImage(width, vector<Pixel>(height));
-        renderQuadTreeToMatrix(root, compressedImage);
+        QuadTreeNode::renderQuadTreeToMatrix(root, compressedImage);
         
         // Save to file
         if(!ImageProcessor::saveImage(outputPath, compressedImage, width, height)){
@@ -276,15 +288,28 @@ int main() {
             delete root;
             return 1;
         }
+        std::cout << "Saved Image\n";
         
+        //Render GIF
+        if(isSaveGIF == "y" || isSaveGIF == "Y"){
+            QuadTreeNode::generateGifFromQuadTree(root, width, height);
+            std::system("magick -delay 50 -loop 0 frame*.bmp temp_output.gif");
+            std::string moveCommand = "mv temp_output.gif \"" + gifPath + "\"";
+            std::system(moveCommand.c_str());
+        
+            std::system("rm frame*.bmp"); // Clean up
+            cout << "GIF berhasil disimpan di: " << gifPath << endl;
+        }
+
+
         auto end = chrono::high_resolution_clock::now();
         chrono::duration<double> duration = end - start;
         cout << "\nWaktu Eksekusi: " << duration.count() << " detik\n";
         
         calculateCompression(inputPath, outputPath);
         
-        std::cout << "Banyak simpul: " << countNodes(root) << std::endl;
-        std::cout << "Kedalaman pohon: " << treeDepth(root) << std::endl;
+        std::cout << "Banyak simpul: " << QuadTreeNode::countNodes(root) << std::endl;
+        std::cout << "Kedalaman pohon: " << QuadTreeNode::treeDepth(root) << std::endl;
         
         delete root;
         return 0;

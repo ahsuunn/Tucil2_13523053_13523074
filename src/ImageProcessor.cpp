@@ -1,7 +1,10 @@
 #include "header/ImageProcessor.h"
 #include <FreeImage.h>
 #include <iostream>
+#include "header/Quadtree.h"
+using namespace std;
 
+extern int frameCount;
 std::vector<std::vector<Pixel>> ImageProcessor::loadImage(const std::string& filename, int& width, int& height) {
     FreeImage_Initialise();
     FREE_IMAGE_FORMAT format = FreeImage_GetFileType(filename.c_str(), 0);
@@ -85,4 +88,26 @@ bool ImageProcessor::saveImage(const std::string& filename, const std::vector<st
     FreeImage_Unload(bitmap);
     FreeImage_DeInitialise();
     return success;
+}
+
+void ImageProcessor::saveFrame(QuadTreeNode* root, int width, int height) {
+    FIBITMAP* image = FreeImage_Allocate(width, height, 24);
+    std::vector<std::vector<Pixel>> renderMatrix(width, std::vector<Pixel>(height)); // Note: height first, width second
+    root->renderQuadTreeToMatrix(root, renderMatrix);
+    std::cout << "Row Size: " << renderMatrix.size() << " Col Size: " << renderMatrix[0].size() << std::endl;
+
+    for (int y = 0; y < height; ++y) {
+        BYTE* bits = FreeImage_GetScanLine(image, y);
+        for (int x = 0; x < width; ++x) {
+            const Pixel& px = renderMatrix[x][y];
+            bits[x * 3 + FI_RGBA_BLUE] = px.b;
+            bits[x * 3 + FI_RGBA_GREEN] = px.g;
+            bits[x * 3 + FI_RGBA_RED] = px.r;
+        }
+    }
+
+
+    std::string filename = "frame" + std::to_string(frameCount++) + ".bmp";
+    FreeImage_Save(FIF_BMP, image, filename.c_str());
+    FreeImage_Unload(image);
 }
